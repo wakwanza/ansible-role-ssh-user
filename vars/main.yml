@@ -1,0 +1,7 @@
+---
+# vars file for ssh-user
+ssh:
+   user: username
+   groups: wheel,disk
+   expiry: 1427382840
+   pubkey: "ssh-rsa ......"

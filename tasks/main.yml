@@ -1,0 +1,19 @@
+---
+# tasks file for ssh-user
+  - name: Setup user with default groups on nodes
+    user: name={{ ssh.user }} groups={{ ssh.groups }} state=present expires={{ ssh.expiry }}
+
+  - name: make the .ssh dir if doesnt exist
+    file: path=/home/{{ ssh.user }}/.ssh state=directory owner={{ ssh.user }}
+
+  - name: Create the auth key file
+    file: path=/home/{{ ssh.user }}/.ssh/authorized_keys state=touch
+
+  - name: Insert the authorised key
+    lineinfile: "backup=yes  dest=/home/{{ ssh.user }}/.ssh/authorized_keys line='\n{{ ssh.pubkey }}' regexp='' insertafter=EOF"
+
+  - name: Add user to sudoers
+    lineinfile: "dest=/etc/sudoers regexp='^{{ ssh.user }} ALL' line='{{ ssh.user }} ALL=(ALL) NOPASSWD: ALL' state=present"
+
+  - name: Add the private key
+    copy: src=id_rsa dest=/home/{{ ssh.user }}/.ssh/  owner={{ ssh.user }} mode=0400
